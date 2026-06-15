@@ -2,65 +2,45 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <style>
-        body { margin: 0; background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #player-area { width: 100%; height: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-family: sans-serif; }
-        iframe, video { width: 100%; height: 100%; object-fit: contain; }
-    </style>
+    <title>Player Video</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <div id="video-container">
+        <h1 id="video-title">Memuat...</h1>
+        <video id="main-video" controls width="100%">
+            <source src="" type="video/mp4">
+            Browser Anda tidak mendukung video.
+        </video>
+    </div>
 
-    <div id="player-area">Memuat Video...</div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/config.js"></script>
     <script>
-        const client = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+        // 1. Ambil kode dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const folder = urlParams.get('folder');
 
-        async function init() {
-            const code = new URLSearchParams(window.location.search).get('folder');
-            if (!code) {
-                document.getElementById('player-area').innerText = "Link tidak valid.";
-                return;
-            }
+        // 2. Inisialisasi Supabase (gunakan anon key)
+        const supabase = supabase.createClient('URL_SUPABASE_ANDA', 'ANON_KEY_ANDA');
 
-            const { data, error } = await client.from('videos_list').select('*').eq('access_code', code).single();
+        async function loadVideo() {
+            const { data, error } = await supabase
+                .from('videos_list')
+                .select('*')
+                .eq('access_code', folder)
+                .single();
 
             if (data) {
-                document.title = data.name;
-                const area = document.getElementById('player-area');
-                
-                // Render Player
-                area.innerHTML = data.video_url.includes('.mp4') 
-                    ? `<video src="${data.video_url}" controls autoplay playsinline></video>`
-                    : `<iframe src="${data.video_url}" frameborder="0" allowfullscreen></iframe>`;
-                
-                // Panggil fungsi iklan
-                setupAd();
+                document.getElementById('video-title').innerText = data.name;
+                const video = document.getElementById('main-video');
+                video.src = data.video_url; // Pastikan kolom ini ada di Supabase
             } else {
-                document.getElementById('player-area').innerText = "Video tidak ditemukan.";
+                alert("Video tidak ditemukan!");
             }
         }
 
-        function setupAd() {
-            const adUrl = "https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb";
-            document.getElementById('player-area').addEventListener('click', function(e) {
-                // Jangan buka iklan kalau yang diklik adalah kontrol video
-                if (e.target.tagName === 'VIDEO') return; 
-                
-                const now = new Date().getTime();
-                if (now - (localStorage.getItem('lastAd') || 0) > 60000) {
-                    window.open(adUrl, '_blank');
-                    localStorage.setItem('lastAd', now);
-                }
-            });
-        }
-
-        // Jalankan Inisialisasi
-        init();
+        loadVideo();
     </script>
+
 
     <script type="text/javascript">
         var _Hasync = _Hasync || [];
