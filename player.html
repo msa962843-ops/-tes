@@ -2,59 +2,72 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Player Video</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        /* Desain Bersih */
+        body { margin: 0; background: #050505; height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        #player-container { width: 100%; max-width: 800px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+        
+        .video-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
+        video, iframe { width: 100%; height: 100%; border: none; }
+        
+        #status-msg { text-align: center; padding: 20px; color: #888; }
+    </style>
 </head>
 <body>
-    <div id="video-container">
-        <h1 id="video-title">Memuat...</h1>
-        <video id="main-video" controls width="100%">
-            <source src="" type="video/mp4">
-            Browser Anda tidak mendukung video.
-        </video>
+
+    <div id="player-container">
+        <div id="player-area" class="video-wrapper">Memuat...</div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config.js"></script>
     <script>
-        // 1. Ambil kode dari URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const folder = urlParams.get('folder');
+        const client = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-        // 2. Inisialisasi Supabase (gunakan anon key)
-        const supabase = supabase.createClient('URL_SUPABASE_ANDA', 'ANON_KEY_ANDA');
+        async function init() {
+            const code = new URLSearchParams(window.location.search).get('folder');
+            const area = document.getElementById('player-area');
 
-        async function loadVideo() {
-            const { data, error } = await supabase
-                .from('videos_list')
-                .select('*')
-                .eq('access_code', folder)
-                .single();
+            if (!code) {
+                area.innerHTML = "<div id='status-msg'>Video tidak ditemukan.</div>";
+                return;
+            }
 
-            if (data) {
-                document.getElementById('video-title').innerText = data.name;
-                const video = document.getElementById('main-video');
-                video.src = data.video_url; // Pastikan kolom ini ada di Supabase
-            } else {
-                alert("Video tidak ditemukan!");
+            try {
+                const { data, error } = await client.from('videos_list').select('*').eq('access_code', code).single();
+
+                if (data) {
+                    document.title = data.name;
+                    area.innerHTML = data.video_url.includes('.mp4') 
+                        ? `<video src="${data.video_url}" controls autoplay playsinline></video>`
+                        : `<iframe src="${data.video_url}" allowfullscreen></iframe>`;
+                    
+                    // Setup Iklan
+                    area.addEventListener('click', (e) => {
+                        if (e.target.tagName !== 'VIDEO') triggerAd();
+                    });
+                } else {
+                    area.innerHTML = "<div id='status-msg'>Data video tidak valid.</div>";
+                }
+            } catch (err) {
+                area.innerHTML = "<div id='status-msg'>Gagal memuat video.</div>";
             }
         }
 
-        loadVideo();
-    </script>
+        function triggerAd() {
+            const adUrl = "https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb";
+            const lastAd = localStorage.getItem('lastAd') || 0;
+            if (Date.now() - lastAd > 60000) {
+                window.open(adUrl, '_blank');
+                localStorage.setItem('lastAd', Date.now());
+            }
+        }
 
-
-    <script type="text/javascript">
-        var _Hasync = _Hasync || [];
-        _Hasync.push(['Histats.start','1,4971849,4,0,0,0,00000000']);
-        _Hasync.push(['Histats.fasi','1']);
-        _Hasync.push(['Histats.track_hits','']);
-        (function() {
-            var hs = document.createElement('script'); 
-            hs.type = 'text/javascript'; 
-            hs.async = true;
-            hs.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 's10.histats.com/js15_as.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
-        })();
+        init();
     </script>
-    <noscript><a href="/" target="_blank"><img src="//sstatic1.histats.com/0.gif?4971849&101" alt="hit counter" border="0"></a></noscript>
 </body>
 </html>
