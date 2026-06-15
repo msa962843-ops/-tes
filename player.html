@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="referrer" content="no-referrer">      
     <meta name="twitter:card" content="summary_large_image">
-    <meta id="tw-image" name="twitter:image" content="">
+    <meta id="og-image" property="og:image" content="https://via.placeholder.com/600">
+    <meta id="tw-image" name="twitter:image" content="https://via.placeholder.com/600">
+    
     <title>Video Player</title>
     <style>
         body { background: #000; color: white; font-family: sans-serif; padding: 20px; }
@@ -31,13 +31,13 @@
             if (data && data.length > 0) {
                 document.getElementById('f-title').innerText = "Folder: " + folder;
                 
-                // Gunakan thumbnail video pertama untuk Twitter
-                const firstThumb = data[0].thumbnail_url || 'https://via.placeholder.com/600';
-                document.getElementById('tw-image').setAttribute('content', firstThumb);
+                // Mengatur thumbnail link (Preview) berdasarkan data video pertama
+                const thumb = data[0].thumbnail_url || 'https://via.placeholder.com/600';
+                document.getElementById('og-image').setAttribute('content', thumb);
+                document.getElementById('tw-image').setAttribute('content', thumb);
                 
                 const list = document.getElementById('video-list');
                 data.forEach(v => {
-                    // Cek jika thumbnail null
                     const img = v.thumbnail_url || 'https://via.placeholder.com/200';
                     list.innerHTML += `
                         <div class="card">
