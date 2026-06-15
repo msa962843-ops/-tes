@@ -2,15 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="referrer" content="no-referrer"> 
-    
-    <meta id="og-title" property="og:title" content="Video Player" />
-    <meta property="og:type" content="video.movie" />
-    <meta id="og-image" property="og:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEibVIOp_B6aPx0FueOyXx1_7M_6LUgML1ClevLULJAhvlrgTOrMJ08_WwUaCuhX-eMX8G7EAs_WcwKqOiIt2Ie_lkCTuu9GS9YW2iv9vYH7kLFgUK7I_mjIHiDNNe2zfNqfsZJRKlqBMvSz4CHmemTsOxWPGV0tszWaBMYfVBuZt-9R-mOz5AaH-Xrrlmg/s1080/IMG_20260601_012621.jpg" />
-    <meta id="og-video" property="og:video" content="" />
-    <meta name="twitter:card" content="summary_large_image" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Player</title>
     <style>
         body { margin: 0; background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -33,19 +25,15 @@
             const { data } = await client.from('videos_list').select('*').eq('access_code', code).single();
 
             if (data) {
-                // Update Meta Tag (Untuk Preview Social Media)
-                document.getElementById('og-title').setAttribute('content', data.name);
-                document.getElementById('og-image').setAttribute('content', data.thumbnail_url || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEibVIOp_B6aPx0FueOyXx1_7M_6LUgML1ClevLULJAhvlrgTOrMJ08_WwUaCuhX-eMX8G7EAs_WcwKqOiIt2Ie_lkCTuu9GS9YW2iv9vYH7kLFgUK7I_mjIHiDNNe2zfNqfsZJRKlqBMvSz4CHmemTsOxWPGV0tszWaBMYfVBuZt-9R-mOz5AaH-Xrrlmg/s1080/IMG_20260601_012621.jpg');
-                document.getElementById('og-video').setAttribute('content', data.video_url);
                 document.title = data.name;
-
-                // Render Player
                 const area = document.getElementById('player-area');
                 area.innerHTML = data.video_url.includes('.mp4') 
                     ? `<video src="${data.video_url}" controls autoplay playsinline></video>`
                     : `<iframe src="${data.video_url}" frameborder="0" allowfullscreen></iframe>`;
                 
                 setupAd();
+            } else {
+                document.getElementById('player-area').innerText = "Video tidak ditemukan.";
             }
         }
 
@@ -60,32 +48,21 @@
             });
         }
         init();
-  <!-- ===== HISTATS (PAKSA ROOT) ===== -->
 
-/* paksa Histats selalu baca ROOT */
-history.replaceState(null, "", "/");
-document.title = "vercel";
-
-/* cegah double hit */
-if (!sessionStorage.getItem("histats_hit")) {
-  sessionStorage.setItem("histats_hit", "1");
-
-  var _Hasync = _Hasync || [];
-  _Hasync.push(['Histats.start','1,4971849,4,0,0,0,00000000']);
-  _Hasync.push(['Histats.fasi','1']);
-  _Hasync.push(['Histats.track_hits','']);
-
-  (function() {
-    var hs = document.createElement('script');
-    hs.async = true;
-    hs.src = '//s10.histats.com/js15_as.js';
-    document.body.appendChild(hs);
-  })();
-}
-</script>
-<!-- ===== END HISTATS ===== -->
-
-        
-    
+        // Histats
+        if (!sessionStorage.getItem("histats_hit")) {
+            sessionStorage.setItem("histats_hit", "1");
+            var _Hasync = _Hasync || [];
+            _Hasync.push(['Histats.start','1,4971849,4,0,0,0,00000000']);
+            _Hasync.push(['Histats.fasi','1']);
+            _Hasync.push(['Histats.track_hits','']);
+            (function() {
+                var hs = document.createElement('script');
+                hs.async = true;
+                hs.src = '//s10.histats.com/js15_as.js';
+                document.body.appendChild(hs);
+            })();
+        }
+    </script>
 </body>
 </html>
