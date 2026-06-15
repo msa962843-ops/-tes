@@ -2,20 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Input Video</title>
-    <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-    </style>
+    <title>Admin Panel</title>
 </head>
 <body>
-    <h2>Tambah Data Video</h2>
-    <input type="text" id="name" placeholder="Judul Video">
-    <input type="text" id="video_url" placeholder="Link Video URL (MP4/Iframe)">
-    <input type="text" id="thumbnail_url" placeholder="Link Thumbnail (Untuk Social Preview)">
-    <input type="text" id="access_code" placeholder="Access Code (Contoh: video123)">
-    <button onclick="saveData()">Simpan ke Supabase</button>
+    <h2>Input Data Video</h2>
+    <input type="text" id="name" placeholder="Judul Video"><br>
+    <input type="text" id="video_url" placeholder="Link Video URL"><br>
+    <input type="text" id="thumbnail_url" placeholder="Link Thumbnail (Untuk Preview Link)"><br>
+    <input type="text" id="access_code" placeholder="Access Code (Contoh: video)"><br>
+    <button onclick="saveData()">Simpan Data</button>
     <div id="result"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -30,7 +25,7 @@
                 access_code: document.getElementById('access_code').value
             }]);
             if (!error) {
-                document.getElementById('result').innerHTML = "Sukses! Akses melalui: /player.html?folder=" + document.getElementById('access_code').value;
+                document.getElementById('result').innerHTML = "Sukses! Link: " + window.location.origin + "/player.html?folder=" + document.getElementById('access_code').value;
             } else {
                 alert("Error: " + error.message);
             }
