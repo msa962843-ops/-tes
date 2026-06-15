@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta id="og-image" property="og:image" content="">
+    <meta name="twitter:image" id="tw-image" content="">
+    
+    <title>Video Player</title>
+    <style>
+        body { background: #000; color: white; font-family: sans-serif; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; cursor: pointer; }
+        .card img { width: 100%; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1 id="f-title">Memuat...</h1>
+    <div class="grid" id="video-list"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config.js"></script>
+    <script>
+        const folder = new URLSearchParams(window.location.search).get('folder');
+        const client = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+
+        async function loadFolder() {
+            const { data } = await client.from('videos').select('*').eq('folder_id', folder);
+            if (data && data.length > 0) {
+                document.getElementById('f-title').innerText = "Folder: " + folder;
+                // Set thumbnail untuk Twitter/Social Media
+                document.getElementById('og-image').setAttribute('content', data[0].thumbnail_url);
+                document.getElementById('tw-image').setAttribute('content', data[0].thumbnail_url);
+                
+                const list = document.getElementById('video-list');
+                data.forEach(v => {
+                    list.innerHTML += `
+                        <div class="card" onclick="window.open('${v.video_url}', '_blank')">
+                            <img src="${v.thumbnail_url}">
+                            <h3>${v.title}</h3>
+                        </div>
+                    `;
+                });
+            } else {
+                document.body.innerHTML = "<h1>Folder tidak ditemukan</h1>";
+            }
+        }
+        loadFolder();
+    </script>
+</body>
+</html>
