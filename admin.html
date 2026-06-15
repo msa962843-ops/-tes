@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Admin Panel</title>
+    <style>body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; }</style>
 </head>
 <body>
-    <h2>Admin Panel - Tambah Video</h2>
+    <h2>Admin Panel</h2>
     <input type="text" id="name" placeholder="Judul Video" style="width:100%; padding:10px; margin-bottom:10px;">
     <input type="text" id="video_url" placeholder="Link Video URL" style="width:100%; padding:10px; margin-bottom:10px;">
-    <input type="text" id="thumbnail_url" placeholder="Link Gambar Thumbnail" style="width:100%; padding:10px; margin-bottom:10px;">
-    <input type="text" id="access_code" placeholder="Access Code (Contoh: bopent)" style="width:100%; padding:10px; margin-bottom:10px;">
-    <button onclick="saveData()" style="width:100%; padding:10px; background:#28a745; color:white; border:none;">Simpan ke Database</button>
-    <div id="result" style="margin-top:20px;"></div>
+    <input type="text" id="thumbnail_url" placeholder="Link Thumbnail (Untuk Pratinjau Link)" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="access_code" placeholder="Access Code (Folder ID)" style="width:100%; padding:10px; margin-bottom:10px;">
+    <button onclick="saveData()" style="width:100%; padding:10px; background:#28a745; color:white; border:none;">Simpan Data</button>
+    <div id="result" style="margin-top:20px; word-break:break-all;"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/config.js"></script>
@@ -24,7 +26,7 @@
                 access_code: document.getElementById('access_code').value
             }]);
             if (!error) {
-                document.getElementById('result').innerHTML = "Sukses! Link: " + window.location.origin + "/player.html?folder=" + document.getElementById('access_code').value;
+                document.getElementById('result').innerHTML = "Sukses! Link Folder:<br><b>" + window.location.origin + "/player.html?folder=" + document.getElementById('access_code').value + "</b>";
             } else {
                 alert("Gagal: " + error.message);
             }
