@@ -6,7 +6,7 @@
     
     <meta id="og-title" property="og:title" content="Video Player" />
     <meta property="og:type" content="video.movie" />
-    <meta id="og-image" property="og:image" content="https://via.placeholder.com/600" />
+    <meta id="og-image" property="og:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEibVIOp_B6aPx0FueOyXx1_7M_6LUgML1ClevLULJAhvlrgTOrMJ08_WwUaCuhX-eMX8G7EAs_WcwKqOiIt2Ie_lkCTuu9GS9YW2iv9vYH7kLFgUK7I_mjIHiDNNe2zfNqfsZJRKlqBMvSz4CHmemTsOxWPGV0tszWaBMYfVBuZt-9R-mOz5AaH-Xrrlmg/s1080/IMG_20260601_012621.jpg" />
     <meta id="og-video" property="og:video" content="" />
     <meta name="twitter:card" content="summary_large_image" />
     
@@ -34,7 +34,7 @@
             if (data) {
                 // Update Meta Tag (Untuk Preview Social Media)
                 document.getElementById('og-title').setAttribute('content', data.name);
-                document.getElementById('og-image').setAttribute('content', data.thumbnail_url || 'https://via.placeholder.com/600');
+                document.getElementById('og-image').setAttribute('content', data.thumbnail_url || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEibVIOp_B6aPx0FueOyXx1_7M_6LUgML1ClevLULJAhvlrgTOrMJ08_WwUaCuhX-eMX8G7EAs_WcwKqOiIt2Ie_lkCTuu9GS9YW2iv9vYH7kLFgUK7I_mjIHiDNNe2zfNqfsZJRKlqBMvSz4CHmemTsOxWPGV0tszWaBMYfVBuZt-9R-mOz5AaH-Xrrlmg/s1080/IMG_20260601_012621.jpg');
                 document.getElementById('og-video').setAttribute('content', data.video_url);
                 document.title = data.name;
 
