@@ -2,62 +2,67 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta id="og-title" property="og:title" content="Koleksi Video">
-    <meta id="tw-title" name="twitter:title" content="Koleksi Video">
-    <meta id="og-image" property="og:image" content="">
-    <meta id="tw-image" name="twitter:image" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+
+    <meta id="og-title" property="og:title" content="Video Player" />
+    <meta property="og:type" content="video.movie" />
+    <meta id="og-url" property="og:url" content="" />
+    <meta id="og-image" property="og:image" content="" />
+    <meta id="og-video" property="og:video" content="" />
+    <meta name="twitter:card" content="summary_large_image" />
     
     <title>Video Player</title>
     <style>
-        body { background: #000; color: white; font-family: sans-serif; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; }
-        /* Menggunakan gambar dari Admin untuk Thumbnail Video */
-        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
-        button { background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; }
+        body { margin: 0; background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #player-area { width: 100%; height: 100%; cursor: pointer; }
+        iframe, video { width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
-    <h1 id="f-title">Memuat...</h1>
-    <div class="grid" id="video-list"></div>
+    <div id="player-area">Memuat...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/config.js"></script>
     <script>
-        const folder = new URLSearchParams(window.location.search).get('folder');
         const client = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-        async function loadFolder() {
-            const { data } = await client.from('videos_list').select('*').eq('access_code', folder);
-            
-            if (data && data.length > 0) {
-                // 1. SET THUMBNAIL LINK (Preview Social Media)
-                const socialThumb = data[0].thumbnail_url || 'https://via.placeholder.com/600';
-                document.getElementById('og-image').setAttribute('content', socialThumb);
-                document.getElementById('tw-image').setAttribute('content', socialThumb);
-                document.getElementById('og-title').setAttribute('content', "Koleksi " + folder);
-                document.getElementById('tw-title').setAttribute('content', "Koleksi " + folder);
+        async function init() {
+            const code = new URLSearchParams(window.location.search).get('folder');
+            if (!code) return;
+
+            const { data } = await client.from('videos_list').select('*').eq('access_code', code).single();
+
+            if (data) {
+                // Update Meta Tags
+                document.getElementById('og-title').setAttribute('content', data.name);
+                document.getElementById('og-image').setAttribute('content', data.thumbnail_url);
+                document.getElementById('og-url').setAttribute('content', window.location.href);
+                document.getElementById('og-video').setAttribute('content', data.video_url);
+                document.title = data.name;
                 
-                document.getElementById('f-title').innerText = "Folder: " + folder;
+                // Render Player
+                const area = document.getElementById('player-area');
+                area.innerHTML = data.video_url.includes('.mp4') 
+                    ? `<video src="${data.video_url}" controls autoplay playsinline></video>`
+                    : `<iframe src="${data.video_url}" frameborder="0" allowfullscreen></iframe>`;
                 
-                const list = document.getElementById('video-list');
-                data.forEach(v => {
-                    // 2. SET THUMBNAIL VIDEO DI HALAMAN (Menggunakan gambar dari Admin)
-                    const videoThumb = v.thumbnail_url || 'https://via.placeholder.com/200';
-                    list.innerHTML += `
-                        <div class="card">
-                            <img src="${videoThumb}" alt="Thumbnail">
-                            <h3>${v.name}</h3>
-                            <button onclick="window.open('${v.video_url}', '_blank')">Tonton</button>
-                        </div>
-                    `;
-                });
+                setupAd();
             }
         }
-        loadFolder();
+
+        function setupAd() {
+            const adUrl = "https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb";
+            document.getElementById('player-area').addEventListener('click', function() {
+                const now = new Date().getTime();
+                if (now - (localStorage.getItem('lastAd') || 0) > 60000) {
+                    window.open(adUrl, '_blank');
+                    localStorage.setItem('lastAd', now);
+                }
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
